@@ -26,7 +26,7 @@ import org.osgeo.proj4j.CoordinateTransform;
 import org.osgeo.proj4j.CoordinateTransformFactory;
 import org.osgeo.proj4j.ProjCoordinate;
 
-public class Building3dCrawlerPublish {
+public class Building3dCrawler {
 	
 	static int nn = 0;
 	static int nnP = 0;
