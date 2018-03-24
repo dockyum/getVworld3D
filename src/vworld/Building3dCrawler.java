@@ -33,11 +33,11 @@ public class Building3dCrawlerPublish {
 	
 	static String url3 = "http://xdworld.vworld.kr:8080/XDServer/requestLayerNode?APIKey=";	
 	static String url4 = "http://xdworld.vworld.kr:8080/XDServer/requestLayerObject?APIKey=";	
-	static String apiKey = "----apikey¸¦ ½ÅÃ»ÇÏ¿© ¹ŞÀº ÈÄ ÀÌ°÷¿¡ º¹»çÇÑ´Ù.-----";
-	static String referer = "http://localhost:4141"; //apikey¸¦ ½ÅÃ»ÇÒ ¶§ ÀÔ·ÂÇÏ´Â È£½ºÆ® ÁÖ¼Ò
+	static String apiKey = "----apikeyë¥¼ ì‹ ì²­í•˜ì—¬ ë°›ì€ í›„ ì´ê³³ì— ë³µì‚¬í•œë‹¤.-----";
+	static String referer = "http://localhost:4141"; //apikeyë¥¼ ì‹ ì²­í•  ë•Œ ì…ë ¥í•˜ëŠ” í˜¸ìŠ¤íŠ¸ ì£¼ì†Œ
 	
-	static String storageFolder  = "x:\\vworld\\";	 // ÇÑ¹ø ¹ŞÀ¸¸é °è¼Ó ÀúÀåÇØ µÑ Æú´õ
-	static String targetFolder = "x:\\vworld\\#obj_sample\\"; //±×¶§±×¶§ ÇÊ¿äÇÑ ¿µ¿ªÀ» ÃßÃâÇÒ Æú´õ, ¿äÃ» ¿µ¿ªÀÌ ´Ş¶óÁú¶§¸¶´Ù ¹Ù²Ù¾îÁàµµ ¼­¹ö ¿äÃ» ºÎÇÏ´Â ¾ø´Ù.
+	static String storageFolder  = "x:\\vworld\\";	 // í•œë²ˆ ë°›ìœ¼ë©´ ê³„ì† ì €ì¥í•´ ë‘˜ í´ë”
+	static String targetFolder = "x:\\vworld\\#obj_sample\\"; //ê·¸ë•Œê·¸ë•Œ í•„ìš”í•œ ì˜ì—­ì„ ì¶”ì¶œí•  í´ë”, ìš”ì²­ ì˜ì—­ì´ ë‹¬ë¼ì§ˆë•Œë§ˆë‹¤ ë°”ê¾¸ì–´ì¤˜ë„ ì„œë²„ ìš”ì²­ ë¶€í•˜ëŠ” ì—†ë‹¤.
 	
 	static String csName1 = "EPSG:4326";
 	static String csName2 = "EPSG:5179";	    
@@ -49,48 +49,48 @@ public class Building3dCrawlerPublish {
 	static ProjCoordinate p1 = new ProjCoordinate();
 	static ProjCoordinate p2 = new ProjCoordinate();
 	
-	//±³·®Àº ·¹º§ 14¿¡¼­ ¹Ş¾Æ¿Í¾ß ÇÑ´Ù.
+	//êµëŸ‰ì€ ë ˆë²¨ 14ì—ì„œ ë°›ì•„ì™€ì•¼ í•œë‹¤.
 	//static String layerName = "facility_bridge";
 	//static int level = 14;
 	
-	//°Ç¹°Àº ·¹º§ 15¿¡¼­ ¹Ş¾Æ¿Í¾ß ÇÑ´Ù.
+	//ê±´ë¬¼ì€ ë ˆë²¨ 15ì—ì„œ ë°›ì•„ì™€ì•¼ í•œë‹¤.
 	static String layerName = "facility_build";
 	static int level = 15;	
 	
-	static double unit = 360 / (Math.pow(2, level) * 10); //15·¹º§ÀÇ °İÀÚ Å©±â(´ÜÀ§:°æÀ§µµ)
+	static double unit = 360 / (Math.pow(2, level) * 10); //15ë ˆë²¨ì˜ ê²©ì í¬ê¸°(ë‹¨ìœ„:ê²½ìœ„ë„)
 	
 	static HashSet<String> jpgList;
 	static HashSet<String> fileNamesXdo;
 	
 	private static String[] getCoordination() {		
 		
-		String minmax = "37.560639, 126.991816,37.571219, 126.999605"; //sample ÁÂÇ¥
+		String minmax = "37.560639, 126.991816,37.571219, 126.999605"; //sample ì¢Œí‘œ
 		String[] temp1 = minmax.replaceAll(" ", "").split(",");
 		return new String[]{temp1[1],temp1[0], temp1[3],temp1[2]};
 	}
 
 	public static void main(String[] args) throws IOException {	
 		
-		//ÇÊ¿äÇÑ subfolder¸¦ ¸¸µç´Ù. ÀÌ¹Ì ÀÖÀ¸¸é °Ç³Ê¶Ú´Ù.
+		//í•„ìš”í•œ subfolderë¥¼ ë§Œë“ ë‹¤. ì´ë¯¸ ìˆìœ¼ë©´ ê±´ë„ˆë›´ë‹¤.
 		String[] folders1 = {"jpg","xdo_dat","xdo_Files","xdo_List",};
 		makeSubFolders(storageFolder, folders1);
 		String[] folders2 = {"xdo_obj","xdo_obj_UTMK"};
 		makeSubFolders(targetFolder,folders2);
 		
-		//ºÒÇÊ¿äÇÑ Áßº¹ÆÄÀÏ ´Ù¿î·Îµå¸¦ ÇÏÁö ¾Ê±â À§ÇØ ±âÁ¸¿¡ ¹Ş¾Æ³õ¾Ò´ø ÆÄÀÏ ¸ñ·ÏÀ» ÀĞ¾îµéÀÎ´Ù. 
+		//ë¶ˆí•„ìš”í•œ ì¤‘ë³µíŒŒì¼ ë‹¤ìš´ë¡œë“œë¥¼ í•˜ì§€ ì•Šê¸° ìœ„í•´ ê¸°ì¡´ì— ë°›ì•„ë†“ì•˜ë˜ íŒŒì¼ ëª©ë¡ì„ ì½ì–´ë“¤ì¸ë‹¤. 
 		HashSet<String> fileNamesDAT = getFileNames(storageFolder+"xdo_dat\\", ".dat");
 		HashSet<String> fileNamesXdoList = getFileNames(storageFolder+"xdo_List\\", ".txt");
 		jpgList = getFileNames(storageFolder+"jpg\\", ".jpg");
 		fileNamesXdo = getFileNames(storageFolder+"xdo_Files\\", ".xdo");
 		
-		//¾Õ¿¡¼­ ¼³Á¤ÇÑ ¼öÁı ¿µ¿ª ÁÂÇ¥°ªÀ» ¹Ş¾Æ¿Â´Ù.
+		//ì•ì—ì„œ ì„¤ì •í•œ ìˆ˜ì§‘ ì˜ì—­ ì¢Œí‘œê°’ì„ ë°›ì•„ì˜¨ë‹¤.
 		String[] latlon = getCoordination();
-		String minLon = latlon[0];   //°æµµ
-		String minLat = latlon[1];	 // À§µµ
+		String minLon = latlon[0];   //ê²½ë„
+		String minLat = latlon[1];	 // ìœ„ë„
 		String maxLon = latlon[2];
 		String maxLat = latlon[3];		
 		
-		//¿ø·¡´Â request¿Í response¸¦ ÅëÇØ idx idy ¸ñ·ÏµéÀ» ¹Ş¾Æ¿Í¾ß ÇÏÁö¸¸, °£´ÜÇÑ °è»êÀ» ÅëÇØ ±¸ÇÒ ¼ö ÀÖÀ¸¹Ç·Î Á÷Á¢ ÇÑ´Ù.
+		//ì›ë˜ëŠ” requestì™€ responseë¥¼ í†µí•´ idx idy ëª©ë¡ë“¤ì„ ë°›ì•„ì™€ì•¼ í•˜ì§€ë§Œ, ê°„ë‹¨í•œ ê³„ì‚°ì„ í†µí•´ êµ¬í•  ìˆ˜ ìˆìœ¼ë¯€ë¡œ ì§ì ‘ í•œë‹¤.
 		int minIdx = (int)Math.floor((Double.parseDouble(minLon)+180)/unit);
 		int minIdy = (int)Math.floor((Double.parseDouble(minLat)+90)/unit);
 		int maxIdx = (int)Math.floor((Double.parseDouble(maxLon)+180)/unit);
@@ -110,39 +110,39 @@ public class Building3dCrawlerPublish {
 		
 		L1 : for (int i=0; i<idxIdyList.length ; i++) {
 			
-			System.out.println("file :"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+"¼¼¼Ç ½ÃÀÛ....."+(i+1)+"/"+idxIdyList.length);
+			System.out.println("file :"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+"ì„¸ì…˜ ì‹œì‘....."+(i+1)+"/"+idxIdyList.length);
 			
-			//request¸¦ À§ÇÑ ÁÖ¤Ç »ı¼º 
+			//requestë¥¼ ìœ„í•œ ì£¼ã…— ìƒì„± 
 			String address3 = url3 + apiKey +"&Layer=" + layerName + "&Level=" + level 
 					+ "&IDX=" + idxIdyList[i][0] + "&IDY=" + idxIdyList[i][1];
 			String fileNameXdo = "xdoList"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+".dat";
 			
-			//IDX¿Í IDY ¹× nodeLevelÀ» º¸³»¼­ xdo¸ñ·ÏµéÀ» ¹Ş¾Æ dat¿¡ ÀúÀåÇÑ´Ù.
+			//IDXì™€ IDY ë° nodeLevelì„ ë³´ë‚´ì„œ xdoëª©ë¡ë“¤ì„ ë°›ì•„ datì— ì €ì¥í•œë‹¤.
 			if (!fileNamesDAT.contains(fileNameXdo)) {
 				sendQueryForBin(address3, storageFolder+"xdo_dat\\"+fileNameXdo);   			
 			}
 			
-			//Äõ¸®¸¦ º¸³½ ¿µ¿ª¿¡ °Ç¹°µéÀÌ ¾øÀ» °æ¿ì datChecker´Â false¸¦ ¹İÈ¯ÇÑ´Ù. ÀÌ¶§ ÇØ´ç ·çÇÁ´Â °Ç³Ê¶Ú´Ù.
-			//À§¿¡¼­ ÀÏ´Ü dat ÆÄÀÏÀ» ÀúÀåÇÑ ÈÄ, datChecker¿¡¼­ ´Ù½Ã ÀĞ¾î¿Â´Ù. 
+			//ì¿¼ë¦¬ë¥¼ ë³´ë‚¸ ì˜ì—­ì— ê±´ë¬¼ë“¤ì´ ì—†ì„ ê²½ìš° datCheckerëŠ” falseë¥¼ ë°˜í™˜í•œë‹¤. ì´ë•Œ í•´ë‹¹ ë£¨í”„ëŠ” ê±´ë„ˆë›´ë‹¤.
+			//ìœ„ì—ì„œ ì¼ë‹¨ dat íŒŒì¼ì„ ì €ì¥í•œ í›„, datCheckerì—ì„œ ë‹¤ì‹œ ì½ì–´ì˜¨ë‹¤. 
 			if (!datChecker(storageFolder+"xdo_dat\\"+fileNameXdo)) {
-				System.out.println("ÀÚ·á ¾øÀ½. °Ç³Ê¶Ü");
+				System.out.println("ìë£Œ ì—†ìŒ. ê±´ë„ˆëœ€");
 				continue L1; 			
 			}
 			
 			String fileNameParsedXdo = "xdoList_parsed"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+".txt";			
 			
 			if (!fileNamesXdoList.contains(fileNameParsedXdo)) {
-				datParser(storageFolder+"xdo_dat\\"+fileNameXdo, storageFolder+"xdo_List\\"+fileNameParsedXdo); //dat¸¦ ´Ù½Ã ÀĞ°í txt¿¡ ÆÄ½ÌÇÑ´Ù.
+				datParser(storageFolder+"xdo_dat\\"+fileNameXdo, storageFolder+"xdo_List\\"+fileNameParsedXdo); //datë¥¼ ë‹¤ì‹œ ì½ê³  txtì— íŒŒì‹±í•œë‹¤.
 			}
 			
-			//obj°¡ ÀÖ°Å³ª ¾ø°Å³ª ±×³É ÁøÇàÇÑ´Ù. ¾îÂ÷ÇÇ dat¸¸ Äõ¸®¸¦ º¸³»´Â °ÍÀÌ°í obj´Â ³» ÄÄÇ»ÅÍ¿¡¼­ ¾à°£ÀÇ °è»ê¸¸ ÇÏ¸é µÇ±â ¶§¹®ÀÌ´Ù. °á°ú ÆÄÀÏÀ» À§¿¡¼­ ¼³Á¤ÇÏ¸é target·Î ¼Ô¾Æ³»ÁØ´Ù.
-			//ÅØ½ºÃÄ¸¦ ÀÔÈ÷±â À§ÇØ obj¿Í mtlÀ» ±â·ÏÇÑ´Ù.
+			//objê°€ ìˆê±°ë‚˜ ì—†ê±°ë‚˜ ê·¸ëƒ¥ ì§„í–‰í•œë‹¤. ì–´ì°¨í”¼ datë§Œ ì¿¼ë¦¬ë¥¼ ë³´ë‚´ëŠ” ê²ƒì´ê³  objëŠ” ë‚´ ì»´í“¨í„°ì—ì„œ ì•½ê°„ì˜ ê³„ì‚°ë§Œ í•˜ë©´ ë˜ê¸° ë•Œë¬¸ì´ë‹¤. ê²°ê³¼ íŒŒì¼ì„ ìœ„ì—ì„œ ì„¤ì •í•˜ë©´ targetë¡œ ì†ì•„ë‚´ì¤€ë‹¤.
+			//í…ìŠ¤ì³ë¥¼ ì…íˆê¸° ìœ„í•´ objì™€ mtlì„ ê¸°ë¡í•œë‹¤.
 			String fileNameObj = "final_object file"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+".obj";
 			String fileNameMtl = "final_object file"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+".mtl";
 			
-			System.out.println(fileNameObj+"ÀúÀå½Ãµµ....."+(i+1)+"/"+idxIdyList.length);			
-			xdosToObj(fileNameParsedXdo, fileNameObj, fileNameMtl ,idxIdyList[i][0],idxIdyList[i][1] ); //°³º°ÀûÀÎ xdoµéÀ» È£ÃâÇÏ¿© obj ÆÄÀÏ·Î ¸¸µç´Ù.			
-			System.out.println(fileNameObj+"ÀúÀå¿Ï·á....."+(i+1)+"/"+idxIdyList.length);
+			System.out.println(fileNameObj+"ì €ì¥ì‹œë„....."+(i+1)+"/"+idxIdyList.length);			
+			xdosToObj(fileNameParsedXdo, fileNameObj, fileNameMtl ,idxIdyList[i][0],idxIdyList[i][1] ); //ê°œë³„ì ì¸ xdoë“¤ì„ í˜¸ì¶œí•˜ì—¬ obj íŒŒì¼ë¡œ ë§Œë“ ë‹¤.			
+			System.out.println(fileNameObj+"ì €ì¥ì™„ë£Œ....."+(i+1)+"/"+idxIdyList.length);
 			nn=0;
 			nnP=0;
 		}
@@ -156,7 +156,7 @@ public class Building3dCrawlerPublish {
 	
 	private static void xdosToObj(String fileName, String fileNameObj, String fileNameMtl ,String nodeIDX, String nodeIDY) throws IOException {
 		
-		//¾²±âÁØºñ
+		//ì“°ê¸°ì¤€ë¹„
 		FileWriter fw = new FileWriter(targetFolder+"xdo_obj\\"+fileNameObj);
 		BufferedWriter bw = new BufferedWriter(fw);
 		
@@ -182,22 +182,22 @@ public class Building3dCrawlerPublish {
 		BufferedWriter bwm1 = new BufferedWriter(fwm1);		
 		
 		
-		//ÀĞ±â
+		//ì½ê¸°
 		FileReader fr = new FileReader(storageFolder+"xdo_List\\"+fileName);
 		BufferedReader br = new BufferedReader(fr);
 		
 		String line;
 		String[] temp;
 		
-		//³× ÁÙÀº ÆÄÀÏ¸ñ·ÏÀÌ ¾Æ´Ï¹Ç·Î °Ç³Ê¶Ú´Ù.
+		//ë„¤ ì¤„ì€ íŒŒì¼ëª©ë¡ì´ ì•„ë‹ˆë¯€ë¡œ ê±´ë„ˆë›´ë‹¤.
 		line=br.readLine();
 		line=br.readLine();
 		line=br.readLine();
 		line=br.readLine();
 		
 		
-		//xdoList¿¡¼­ xdo ÆÄÀÏÀÌ¸§À» ÇÏ³ªÇÏ³ª ÀĞ¾îµéÀÌ¸é¼­ objÆÄÀÏÀ» ±â·ÏÇÑ´Ù.
-		//ÇÏ³ªÀÇ xdoList¿¡ ÀÖ´Â °Ç¹°µéÀº ÇÏ³ªÀÇ objÆÄÀÏ¿¡ ³Ö´Â´Ù.
+		//xdoListì—ì„œ xdo íŒŒì¼ì´ë¦„ì„ í•˜ë‚˜í•˜ë‚˜ ì½ì–´ë“¤ì´ë©´ì„œ objíŒŒì¼ì„ ê¸°ë¡í•œë‹¤.
+		//í•˜ë‚˜ì˜ xdoListì— ìˆëŠ” ê±´ë¬¼ë“¤ì€ í•˜ë‚˜ì˜ objíŒŒì¼ì— ë„£ëŠ”ë‹¤.
 		while ((line=br.readLine()) != null) {
 			
 			temp = line.split("\\|");
@@ -208,27 +208,27 @@ public class Building3dCrawlerPublish {
 			double lat = Double.parseDouble(temp[5]);
 			//float altitude = Float.parseFloat(temp[6]);
 			
-			//xdo ÆÄÀÏÀº 3.0.0.1 ¹öÁ¯°ú 3.0.0.2 ¹öÁ¯ÀÌ ÀÖ´Ù. °¢°¢ÀÇ ÆÄÀÏ¿¡ µû¶ó µ¥ÀÌÅÍ ÀúÀå ¹æ½ÄÀÌ ´Ù¸£¹Ç·Î ±¸ºĞÇÏ¿© Ã³¸®ÇÑ´Ù.
+			//xdo íŒŒì¼ì€ 3.0.0.1 ë²„ì ¼ê³¼ 3.0.0.2 ë²„ì ¼ì´ ìˆë‹¤. ê°ê°ì˜ íŒŒì¼ì— ë”°ë¼ ë°ì´í„° ì €ì¥ ë°©ì‹ì´ ë‹¤ë¥´ë¯€ë¡œ êµ¬ë¶„í•˜ì—¬ ì²˜ë¦¬í•œë‹¤.
 			if(version.equals("1")) {
 				
-				//±âÁ¸¿¡ Á¸ÀçÇÏ´Â xdoÆÄÀÏÀÌ¸é ´Ù½Ã ¿äÃ»ÇÏÁö ¾Ê´Â´Ù.
+				//ê¸°ì¡´ì— ì¡´ì¬í•˜ëŠ” xdoíŒŒì¼ì´ë©´ ë‹¤ì‹œ ìš”ì²­í•˜ì§€ ì•ŠëŠ”ë‹¤.
 				if (!fileNamesXdo.contains(xdofileName)) {
 					sendQueryForBin(getAddressForXdoFile(xdofileName, nodeIDX, nodeIDY), storageFolder+"xdo_Files\\"+xdofileName);
 				}
 				//System.out.println("version1");
-				//µÕ±Ù Áö±¸ À§¿Í Æò¸é À§ÀÇ µÎ °¡Áö ÇüÅÂ·Î obj¸¦ ¸¸µç´Ù.
+				//ë‘¥ê·¼ ì§€êµ¬ ìœ„ì™€ í‰ë©´ ìœ„ì˜ ë‘ ê°€ì§€ í˜•íƒœë¡œ objë¥¼ ë§Œë“ ë‹¤.
 				xdo31Parser(xdofileName, bw, getAddressForJpgFile("", nodeIDX, nodeIDY), bwm);
 				xdo31Parser_planar(xdofileName, bw1, lon, lat, bwm1);			
 				
 			} else if (version.equals("2")){
 				
-				//±âÁ¸¿¡ Á¸ÀçÇÏ´Â xdoÆÄÀÏÀÌ¸é ´Ù½Ã ¿äÃ»ÇÏÁö ¾Ê´Â´Ù.
+				//ê¸°ì¡´ì— ì¡´ì¬í•˜ëŠ” xdoíŒŒì¼ì´ë©´ ë‹¤ì‹œ ìš”ì²­í•˜ì§€ ì•ŠëŠ”ë‹¤.
 				if (!fileNamesXdo.contains(xdofileName)) {
 					sendQueryForBin(getAddressForXdoFile(xdofileName, nodeIDX, nodeIDY), storageFolder+"xdo_Files\\"+xdofileName); 
 				}
 				//System.out.println("version2");
-				//µÕ±Ù Áö±¸ À§¿Í Æò¸é À§ÀÇ µÎ °¡Áö ÇüÅÂ·Î obj¸¦ ¸¸µç´Ù.
-				xdo32Parser(xdofileName, bw, getAddressForJpgFile("", nodeIDX, nodeIDY), bwm);// ´Ù½Ã xdo ÆÄÀÏÀ» ÀĞ¾î¼­ ÆÄ½ÌÇÑ ÈÄ ÀúÀåÇÑ´Ù.
+				//ë‘¥ê·¼ ì§€êµ¬ ìœ„ì™€ í‰ë©´ ìœ„ì˜ ë‘ ê°€ì§€ í˜•íƒœë¡œ objë¥¼ ë§Œë“ ë‹¤.
+				xdo32Parser(xdofileName, bw, getAddressForJpgFile("", nodeIDX, nodeIDY), bwm);// ë‹¤ì‹œ xdo íŒŒì¼ì„ ì½ì–´ì„œ íŒŒì‹±í•œ í›„ ì €ì¥í•œë‹¤.
 				xdo32Parser_planar(xdofileName, bw1, lon, lat, bwm1);										
 			}
 			
@@ -302,14 +302,14 @@ public class Building3dCrawlerPublish {
 		//writeNailData(bis, imageName,nailSize);
 		
 		if (!jpgList.contains(imageName)) sendQueryForBin(queryAddrForJpg+imageName, storageFolder+"jpg\\"+imageName);
-		//ÀúÀåÀå¼Ò¿¡ ÀÖ´Â ÅØ½ºÃÄ ÆÄÀÏÀ» obj¿Í °°Àº °÷¿¡ º¹»çÇØÁØ´Ù.
+		//ì €ì¥ì¥ì†Œì— ìˆëŠ” í…ìŠ¤ì³ íŒŒì¼ì„ objì™€ ê°™ì€ ê³³ì— ë³µì‚¬í•´ì¤€ë‹¤.
 		fileCopy(storageFolder+"jpg\\"+imageName, targetFolder+"xdo_obj\\"+imageName);
 		
 		bw.write("g "+key);
 		bw.newLine();
 		
-		//materialÀÇ ±âº»Àû ¼Ó¼ºÀº ÀÓÀÇ·Î ¾Æ·¡¿Í °°ÀÌ ¾´´Ù.
-		//mtl ÆÄÀÏÀÇ ÀÚ¼¼ÇÑ ½ºÆåÀº ¾Æ·¡¸¦ ÂüÁ¶
+		//materialì˜ ê¸°ë³¸ì  ì†ì„±ì€ ì„ì˜ë¡œ ì•„ë˜ì™€ ê°™ì´ ì“´ë‹¤.
+		//mtl íŒŒì¼ì˜ ìì„¸í•œ ìŠ¤í™ì€ ì•„ë˜ë¥¼ ì°¸ì¡°
 		//http://paulbourke.net/dataformats/mtl/
 		bwm.write("newmtl "+key);			
 		bwm.newLine();
@@ -394,7 +394,7 @@ public class Building3dCrawlerPublish {
 			
 			vertex[i][0] = p2.x + xyz[0];
 			vertex[i][1] = p2.y -1 * (xyz[1]);			
-			vertex[i][2] = xyz[2] +objxyz[2] -6378137; //vworldÀÌ ÂüÁ¶ÇÏ°í ÀÖ´Â world wind´Â Å¸¿øÃ¼°¡ ¾Æ´Ï¶ó 6,378,137mÀÇ ¹İÁö¸§À» °¡Áö´Â ±¸¸éÃ¼´Ù.
+			vertex[i][2] = xyz[2] +objxyz[2] -6378137; //vworldì´ ì°¸ì¡°í•˜ê³  ìˆëŠ” world windëŠ” íƒ€ì›ì²´ê°€ ì•„ë‹ˆë¼ 6,378,137mì˜ ë°˜ì§€ë¦„ì„ ê°€ì§€ëŠ” êµ¬ë©´ì²´ë‹¤.
 			vertex[i][3] = vnx;
 			vertex[i][4] = vny;
 			vertex[i][5] = vnz;
@@ -421,7 +421,7 @@ public class Building3dCrawlerPublish {
 		
 		int nailSize = pU32(bis);		
 		//writeNailData(bis, imageName,nailSize);
-		//ÀúÀåÀå¼Ò¿¡ ÀÖ´Â ÅØ½ºÃÄ ÆÄÀÏÀ» obj¿Í °°Àº °÷¿¡ º¹»çÇØÁØ´Ù.
+		//ì €ì¥ì¥ì†Œì— ìˆëŠ” í…ìŠ¤ì³ íŒŒì¼ì„ objì™€ ê°™ì€ ê³³ì— ë³µì‚¬í•´ì¤€ë‹¤.
 		fileCopy(storageFolder+"jpg\\"+imageName, targetFolder+"xdo_obj_UTMK\\"+imageName);
 		
 		bw.write("g "+key);
@@ -540,14 +540,14 @@ public class Building3dCrawlerPublish {
 			
 			//writeNailData(bis, imageName,nailSize);
 			if (!jpgList.contains(imageName)) sendQueryForBin(queryAddrForJpg+imageName, storageFolder+"jpg\\"+imageName);
-			//ÀúÀåÀå¼Ò¿¡ ÀÖ´Â ÅØ½ºÃÄ ÆÄÀÏÀ» obj¿Í °°Àº °÷¿¡ º¹»çÇØÁØ´Ù.
+			//ì €ì¥ì¥ì†Œì— ìˆëŠ” í…ìŠ¤ì³ íŒŒì¼ì„ objì™€ ê°™ì€ ê³³ì— ë³µì‚¬í•´ì¤€ë‹¤.
 			fileCopy(storageFolder+"jpg\\"+imageName, targetFolder+"xdo_obj\\"+imageName);
 			
 			bw.write("g "+key);
 			bw.newLine();
 			
-			//materialÀÇ ±âº»Àû ¼Ó¼ºÀº ÀÓÀÇ·Î ¾Æ·¡¿Í °°ÀÌ ¾´´Ù.
-			//mtl ÆÄÀÏÀÇ ÀÚ¼¼ÇÑ ½ºÆåÀº ¾Æ·¡¸¦ ÂüÁ¶
+			//materialì˜ ê¸°ë³¸ì  ì†ì„±ì€ ì„ì˜ë¡œ ì•„ë˜ì™€ ê°™ì´ ì“´ë‹¤.
+			//mtl íŒŒì¼ì˜ ìì„¸í•œ ìŠ¤í™ì€ ì•„ë˜ë¥¼ ì°¸ì¡°
 			//http://paulbourke.net/dataformats/mtl/
 			bwm.write("newmtl "+key);			
 			bwm.newLine();
@@ -671,7 +671,7 @@ public class Building3dCrawlerPublish {
 			int nailSize = pU32(bis);
 			
 			//writeNailData(bis, imageName,nailSize);
-			//ÀúÀåÀå¼Ò¿¡ ÀÖ´Â ÅØ½ºÃÄ ÆÄÀÏÀ» obj¿Í °°Àº °÷¿¡ º¹»çÇØÁØ´Ù.
+			//ì €ì¥ì¥ì†Œì— ìˆëŠ” í…ìŠ¤ì³ íŒŒì¼ì„ objì™€ ê°™ì€ ê³³ì— ë³µì‚¬í•´ì¤€ë‹¤.
 			fileCopy(storageFolder+"jpg\\"+imageName, targetFolder+"xdo_obj_UTMK\\"+imageName);
 			
 			bw.write("g "+key);
@@ -728,7 +728,7 @@ public class Building3dCrawlerPublish {
 	}
 
 
-	//xdo ¿¡ ±âº»ÀûÀ¸·Î Æ÷ÇÔµÈ ÃÖÇÏÀ§ ÇØ»óµµ ÅØ½ºÃÄ ÆÄÀÏÀ» ²¨³½´Ù.
+	//xdo ì— ê¸°ë³¸ì ìœ¼ë¡œ í¬í•¨ëœ ìµœí•˜ìœ„ í•´ìƒë„ í…ìŠ¤ì³ íŒŒì¼ì„ êº¼ë‚¸ë‹¤.
 	private static void writeNailData(BufferedInputStream bis, String fileName, int nailSize) throws IOException {
 		
 		byte[] b = new byte[nailSize];
@@ -747,7 +747,7 @@ public class Building3dCrawlerPublish {
 		FileReader fr = new FileReader(fileNameXdo);
 		BufferedReader br = new BufferedReader(fr);
 		
-		//Ã¹ÁÙ¿¡ ÇØ´ç ³»¿ëÀÌ ÀÖ´Ù.
+		//ì²«ì¤„ì— í•´ë‹¹ ë‚´ìš©ì´ ìˆë‹¤.
 		String line = br.readLine();		
 		br.close();		
 		int check = line.indexOf("ERROR_SERVICE_FILE_NOTTHING");
@@ -760,7 +760,7 @@ public class Building3dCrawlerPublish {
 
 
 	/**
-	 * xdo ¸®½ºÆ®°¡ ÀÖ´Â dat¸¦ ÀĞ°í txt¿¡ ÆÄ½ÌÇÏ¿© ÀúÀåÇÑ´Ù.
+	 * xdo ë¦¬ìŠ¤íŠ¸ê°€ ìˆëŠ” datë¥¼ ì½ê³  txtì— íŒŒì‹±í•˜ì—¬ ì €ì¥í•œë‹¤.
 	 * @param fileName
 	 * @param fileNameW
 	 * @throws IOException
@@ -775,14 +775,14 @@ public class Building3dCrawlerPublish {
 		int[] datHeader = new int[4];
 		String[] datHeaderName = {"level","IDX","IDY","ObjectCount"};
 		
-		//Header ÀĞ±â
+		//Header ì½ê¸°
 		for (int i=0 ; i<4 ; i++) {
 			datHeader[i] = pU32(bis);
 			bw.write(datHeaderName[i]+"="+datHeader[i]);
 			bw.newLine();
 		}
 		
-		//Real3D Model Object ÀĞ±â
+		//Real3D Model Object ì½ê¸°
 		for (int i=0 ; i<datHeader[3] ; i++) {
 			
 			String r_version = pU8(bis)+"."+pU8(bis)+"."+pU8(bis)+"."+pU8(bis);
@@ -815,7 +815,7 @@ public class Building3dCrawlerPublish {
 	}
 
 
-	//¹ÙÀÌ³Ê¸® ÆÄÀÏ ÆÄ½Ì
+	//ë°”ì´ë„ˆë¦¬ íŒŒì¼ íŒŒì‹±
 	private static String pVersion(BufferedInputStream bis) throws IOException {
 		
 		byte[] b = new byte[1];
@@ -824,7 +824,7 @@ public class Building3dCrawlerPublish {
 		return null;
 	}
 
-	//¹ÙÀÌ³Ê¸® ÆÄÀÏ ÆÄ½Ì
+	//ë°”ì´ë„ˆë¦¬ íŒŒì¼ íŒŒì‹±
 	private static float pFloat(BufferedInputStream bis) throws IOException {
 		
 		byte[] b = new byte[4];
@@ -834,7 +834,7 @@ public class Building3dCrawlerPublish {
 		
 	}
 
-	//¹ÙÀÌ³Ê¸® ÆÄÀÏ ÆÄ½Ì
+	//ë°”ì´ë„ˆë¦¬ íŒŒì¼ íŒŒì‹±
 	private static double pDouble(BufferedInputStream bis) throws IOException {
 		
 		byte[] b = new byte[8];
@@ -844,7 +844,7 @@ public class Building3dCrawlerPublish {
 		
 	}
 
-	//¹ÙÀÌ³Ê¸® ÆÄÀÏ ÆÄ½Ì
+	//ë°”ì´ë„ˆë¦¬ íŒŒì¼ íŒŒì‹±
 	private static String pChar(BufferedInputStream bis, int r_keylen) throws IOException {
 		
 		StringBuffer string = new StringBuffer();
@@ -861,7 +861,7 @@ public class Building3dCrawlerPublish {
 		
 	}
 
-	//¹ÙÀÌ³Ê¸® ÆÄÀÏ ÆÄ½Ì
+	//ë°”ì´ë„ˆë¦¬ íŒŒì¼ íŒŒì‹±
 	private static int pU8(BufferedInputStream bis) throws IOException {
 		
 		byte[] b = new byte[1];
@@ -871,7 +871,7 @@ public class Building3dCrawlerPublish {
 		
 	}
 	
-	//¹ÙÀÌ³Ê¸® ÆÄÀÏ ÆÄ½Ì
+	//ë°”ì´ë„ˆë¦¬ íŒŒì¼ íŒŒì‹±
 	private static short pU16(BufferedInputStream bis) throws IOException {
 		
 		byte[] b = new byte[2];
@@ -881,7 +881,7 @@ public class Building3dCrawlerPublish {
 		
 	}
 
-	//¹ÙÀÌ³Ê¸® ÆÄÀÏ ÆÄ½Ì
+	//ë°”ì´ë„ˆë¦¬ íŒŒì¼ íŒŒì‹±
 	private static int pU32(BufferedInputStream bis) throws IOException {
 		
 		
@@ -899,7 +899,7 @@ public class Building3dCrawlerPublish {
 		double p = (lon)/180 * Math.PI;
 		double t = (90-lat)/180 * Math.PI;
 		
-		//¿ø·¡ È¸Àü°ø½Ä´ë·Î ÇÏ´Ï±î 90µµ È¸ÀüµÈ °á°ú°¡ ³ª¿Í zÃàÀ» Áß½ÉÀ¸·Î ´Ù½Ã -90µµ È¸ÀüÀ» Çß´Ù.
+		//ì›ë˜ íšŒì „ê³µì‹ëŒ€ë¡œ í•˜ë‹ˆê¹Œ 90ë„ íšŒì „ëœ ê²°ê³¼ê°€ ë‚˜ì™€ zì¶•ì„ ì¤‘ì‹¬ìœ¼ë¡œ ë‹¤ì‹œ -90ë„ íšŒì „ì„ í–ˆë‹¤.
 		y = (float) (Math.cos(t)*Math.cos(p)*vx - Math.cos(t)* Math.sin(p) * vy - Math.sin(t)*vz);
 		x = -1 *(float) (Math.sin(p)*vx + Math.cos(p)*vy);
 		z = (float) (Math.sin(t)*Math.cos(p)*vx -Math.sin(t)*Math.sin(p)*vy + Math.cos(t)*vz);		
@@ -919,7 +919,7 @@ public class Building3dCrawlerPublish {
 			if (files != null ) {
 				for (int j = 0; j < files.length; j++) { 
 					if(files[j].equals(subfolder)) {
-						isExist = true; //°°Àº ÀÌ¸§ÀÌ ÀÖÀ¸¸é ºüÁ®³ª¿À°í
+						isExist = true; //ê°™ì€ ì´ë¦„ì´ ìˆìœ¼ë©´ ë¹ ì ¸ë‚˜ì˜¤ê³ 
 						break;
 					}		
 	            } //for
@@ -934,18 +934,18 @@ public class Building3dCrawlerPublish {
 
 	
 	/**
-	 * httpRequest¸¦ º¸³»°í ¹ÙÀÌ³Ê¸® ÆÄÀÏÀ» ¹Ş¾Æ ÀúÀåÇÑ´Ù.
+	 * httpRequestë¥¼ ë³´ë‚´ê³  ë°”ì´ë„ˆë¦¬ íŒŒì¼ì„ ë°›ì•„ ì €ì¥í•œë‹¤.
 	 * @param address
 	 * @param xdofileName
 	 */
 	private static void sendQueryForBin(String address, String fileName) {
 
 		try {			
-			//ÀÌ ºÎºĞÀ» ¾²·Á¸é ¾ÆÆÄÄ¡¿¡¼­ httpClient¸¦ ´Ù¿î¹Ş¾Æ ¼³Ä¡ÇÏ¿©¾ß ÇÑ´Ù.
+			//ì´ ë¶€ë¶„ì„ ì“°ë ¤ë©´ ì•„íŒŒì¹˜ì—ì„œ httpClientë¥¼ ë‹¤ìš´ë°›ì•„ ì„¤ì¹˜í•˜ì—¬ì•¼ í•œë‹¤.
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 			
 			HttpGet httpGet = new HttpGet(address);	
-			httpGet.addHeader("Referer",referer); //api key ¿äÃ»½Ã µî·ÏÇÑ ÁÖ¼Ò¸¦ ½áÁØ´Ù.
+			httpGet.addHeader("Referer",referer); //api key ìš”ì²­ì‹œ ë“±ë¡í•œ ì£¼ì†Œë¥¼ ì¨ì¤€ë‹¤.
 			CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
 			HttpEntity entity = httpResponse.getEntity();	
 			BufferedInputStream bis = null;
@@ -976,12 +976,12 @@ public class Building3dCrawlerPublish {
 		
 		File[] files = (new File(fileLocation)).listFiles(); 
 		
-		// µğ·ºÅä¸®°¡ ºñ¾î ÀÖÁö ¾Ê´Ù¸é 
+		// ë””ë ‰í† ë¦¬ê°€ ë¹„ì–´ ìˆì§€ ì•Šë‹¤ë©´ 
 		if(!(files.length <= 0)){ 
 			
 			for (int i = 0; i < files.length; i++) { 
 				
-				// µğ·ºÅä¸®°¡ ¾Æ´Ñ ÆÄÀÏÀÎ °æ¿ì¿¡¸¸ txt ÆÄÀÏÀÎÁö °Ë»çÇÑ´Ù. 
+				// ë””ë ‰í† ë¦¬ê°€ ì•„ë‹Œ íŒŒì¼ì¸ ê²½ìš°ì—ë§Œ txt íŒŒì¼ì¸ì§€ ê²€ì‚¬í•œë‹¤. 
 				if(files[i].isFile() && files[i].getName().endsWith(extension)){ 
 
 				fileNames.add(files[i].getName());
