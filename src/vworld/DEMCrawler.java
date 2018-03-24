@@ -23,9 +23,9 @@ import org.apache.http.impl.client.HttpClients;
 
 import gistools.GeoPoint;
 import gistools.GeoTrans;
-
+ 
 /**
- * vworld·ÎºÎÅÍ DEM(¼öÄ¡Ç¥°í¸ğÇü)À» ±Ü¾î¿Â´Ù.
+ * vworldë¡œë¶€í„° DEM(ìˆ˜ì¹˜í‘œê³ ëª¨í˜•)ì„ ê¸ì–´ì˜¨ë‹¤.
  * @author vuski@github
  *
  */
@@ -34,26 +34,26 @@ public class DEMCrawler {
 	static int nn = 0;
 	
 	static String url3 = "http://xdworld.vworld.kr:8080/XDServer/requestLayerNode?APIKey=";
-	static String apiKey = "----¿©±â¿¡´Â Á÷Á¢ ½ÅÃ»ÇØ¼­ ¹ŞÀº apikey¸¦ ³Ö´Â´Ù------";
+	static String apiKey = "----ì—¬ê¸°ì—ëŠ” ì§ì ‘ ì‹ ì²­í•´ì„œ ë°›ì€ apikeyë¥¼ ë„£ëŠ”ë‹¤------";
 	
-	//Áßº¹ ´Ù¿îÀÌ³ª º¯È¯ÇÏÁö ¾Êµµ·Ï ÀúÀåÇÒ Æú´õ
+	//ì¤‘ë³µ ë‹¤ìš´ì´ë‚˜ ë³€í™˜í•˜ì§€ ì•Šë„ë¡ ì €ì¥í•  í´ë”
 	static String storageDirectory  = "X:\\source\\vworld_terrain\\";
 	
-	//¾ò°íÀÚ ÇÏ´Â ¿µ¿ªÀ» ±×¶§±×¶§ ´Ù¸£°Ô ¼³Á¤ÇØÁÖ¸é ÁÁ´Ù. objÆÄÀÏµé¸¸ ÀúÀåµÊ
+	//ì–»ê³ ì í•˜ëŠ” ì˜ì—­ì„ ê·¸ë•Œê·¸ë•Œ ë‹¤ë¥´ê²Œ ì„¤ì •í•´ì£¼ë©´ ì¢‹ë‹¤. objíŒŒì¼ë“¤ë§Œ ì €ì¥ë¨
 	static String targetDirectory = "x:\\source\\vworld\\#obj_test\\";
 	
-	//¾Æ·¡¿¡¼­ °ª Âü°í
+	//ì•„ë˜ì—ì„œ ê°’ ì°¸ê³ 
 	//https://github.com/nasa/World-Wind-Java/blob/master/WorldWind/src/gov/nasa/worldwind/globes/Earth.java
 	public static final double WGS84_EQUATORIAL_RADIUS = 6378137.0; // ellipsoid equatorial getRadius, in meters
     public static final double WGS84_POLAR_RADIUS = 6356752.3; // ellipsoid polar getRadius, in meters
-    public static final double WGS84_ES = 0.00669437999013; // eccentricity squared, semi-major axis / ÀÌ½É·ü Á¦°ö / ÀÌ½É·ü = Math.sqrt(1-(Àå¹İ°æÁ¦°ö/´Ü¹İ°æÁ¦°ö))
+    public static final double WGS84_ES = 0.00669437999013; // eccentricity squared, semi-major axis / ì´ì‹¬ë¥  ì œê³± / ì´ì‹¬ë¥  = Math.sqrt(1-(ì¥ë°˜ê²½ì œê³±/ë‹¨ë°˜ê²½ì œê³±))
 
     public static final double ELEVATION_MIN = -11000d; // Depth of Marianas trench
     public static final double ELEVATION_MAX = 8500d; // Height of Mt. Everest.
 	
 	static int level = 15;
 	/*
-	level 15 = 1.5m grid (´ë·«ÀûÀ¸·Î)
+	level 15 = 1.5m grid (ëŒ€ëµì ìœ¼ë¡œ)
 	level 14 = 3m grid
 	level 13 = 6m grid
 	level 12 = 12m grid
@@ -63,18 +63,18 @@ public class DEMCrawler {
 	level 8 = 192m grid
 	level 7 = 284m grid
 	*/
-	static double unit = 360 / (Math.pow(2, level) * 10); //15·¹º§ÀÇ °İÀÚ Å©±â(´ÜÀ§:°æÀ§µµ)
+	static double unit = 360 / (Math.pow(2, level) * 10); //15ë ˆë²¨ì˜ ê²©ì í¬ê¸°(ë‹¨ìœ„:ê²½ìœ„ë„)
 	
 	private static String[] getCoordination() {
 		
-		String minmax = "37.560639, 126.991816,37.571219, 126.999605"; //¾ò°íÀÚ ÇÏ´Â ¿µ¿ªÀÇ  {ÁÂÇÏ´Ü À§µµ, ÁÂÇÏ´Ü °æµµ, ¿ì»ó´Ü À§µµ, ¿ì»ó´Ü °æµµ} ¼ø¼­ 
+		String minmax = "37.560639, 126.991816,37.571219, 126.999605"; //ì–»ê³ ì í•˜ëŠ” ì˜ì—­ì˜  {ì¢Œí•˜ë‹¨ ìœ„ë„, ì¢Œí•˜ë‹¨ ê²½ë„, ìš°ìƒë‹¨ ìœ„ë„, ìš°ìƒë‹¨ ê²½ë„} ìˆœì„œ 
 		String[] temp1 = minmax.replaceAll(" ", "").split(",");
 		return new String[]{temp1[1],temp1[0], temp1[3],temp1[2]};
 	}
 
 	public static void main(String[] args) throws IOException {
 		
-		//ÇÊ¿äÇÑ subfolder¸¦ ¸¸µç´Ù. ÀÌ¹Ì ÀÖÀ¸¸é °Ç³Ê¶Ú´Ù.
+		//í•„ìš”í•œ subfolderë¥¼ ë§Œë“ ë‹¤. ì´ë¯¸ ìˆìœ¼ë©´ ê±´ë„ˆë›´ë‹¤.
 		String[] folders1 = {"DEM bil","DEM txt_Cartesian","DEM txt_latlon","DEM txt_UTMK"};
 		makeSubFolders(storageDirectory, folders1);
 		String[] folders2 = {"DEM obj","DEM obj_UTMK"};
@@ -82,13 +82,13 @@ public class DEMCrawler {
 		
 		String layerName = "dem";
 		
-		String[] latlon = getCoordination(); //¾î¶² ¿µ¿ªÀ» °¡Á®¿ÃÁö Á¤ÇÑ´Ù.
-		String minLon = latlon[0]; //°æµµ
-		String minLat = latlon[1]; //À§µµ	 
+		String[] latlon = getCoordination(); //ì–´ë–¤ ì˜ì—­ì„ ê°€ì ¸ì˜¬ì§€ ì •í•œë‹¤.
+		String minLon = latlon[0]; //ê²½ë„
+		String minLat = latlon[1]; //ìœ„ë„	 
 		String maxLon = latlon[2];
 		String maxLat = latlon[3];
 		
-		//idx¿Í idy¸¦ ¹Ş´Â 1´Ü°è ´Ü°è¸¦ »ı·«ÇÏ°í ¿©±â¼­ Á÷Á¢ °è»êÇÑ´Ù.
+		//idxì™€ idyë¥¼ ë°›ëŠ” 1ë‹¨ê³„ ë‹¨ê³„ë¥¼ ìƒëµí•˜ê³  ì—¬ê¸°ì„œ ì§ì ‘ ê³„ì‚°í•œë‹¤.
 		int minIdx = (int)Math.floor((Double.parseDouble(minLon)+180)/unit);
 		int minIdy = (int)Math.floor((Double.parseDouble(minLat)+90)/unit);
 		int maxIdx = (int)Math.floor((Double.parseDouble(maxLon)+180)/unit);
@@ -105,32 +105,32 @@ public class DEMCrawler {
 			}
 		}		
 		
-		//Áßº¹ ´Ù¿î·Îµå¸¦ ÇÇÇÏ±â À§ÇØ ÇöÀç ÀÖ´Â ÆÄÀÏµé ¸ñ·ÏÀ» ±¸ÇÑ´Ù.
+		//ì¤‘ë³µ ë‹¤ìš´ë¡œë“œë¥¼ í”¼í•˜ê¸° ìœ„í•´ í˜„ì¬ ìˆëŠ” íŒŒì¼ë“¤ ëª©ë¡ì„ êµ¬í•œë‹¤.
 		HashSet<String> fileExistBil = getFileNames(storageDirectory+"DEM bil\\", ".bil");
 		HashSet<String> fileExistTxt = getFileNames(storageDirectory+"DEM txt_latlon\\", ".txt");	
 		HashSet<String> fileExistObj = getFileNames(targetDirectory+"DEM obj\\", ".obj");		
 		
-		//´ÜÀ§ ±¸¿ªµéÀ» Â÷·ÊÂ÷·Ê Ã³¸®ÇÑ´Ù.
+		//ë‹¨ìœ„ êµ¬ì—­ë“¤ì„ ì°¨ë¡€ì°¨ë¡€ ì²˜ë¦¬í•œë‹¤.
 		L1 : for (int i=0 ; i<idxIdyList.length ; i++) {
 			
-			System.out.println("file :"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+"¼¼¼Ç ½ÃÀÛ....."+(i+1)+"/"+idxIdyList.length);			
+			System.out.println("file :"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+"ì„¸ì…˜ ì‹œì‘....."+(i+1)+"/"+idxIdyList.length);			
 			
-			//¸¸¾à ÀÌ¹Ì bil ÆÄÀÏÀÌ Á¸ÀçÇÏ¸é °Ç³Ê¶Ú´Ù.
+			//ë§Œì•½ ì´ë¯¸ bil íŒŒì¼ì´ ì¡´ì¬í•˜ë©´ ê±´ë„ˆë›´ë‹¤.
 			String fileNameBil = "terrain file_"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+".bil";			
-			if (!fileExistBil.contains(fileNameBil)) { //Á¸ÀçÇÏÁö ¾ÊÀ¸¸é ´Ù¿î¹Ş´Â´Ù.				
+			if (!fileExistBil.contains(fileNameBil)) { //ì¡´ì¬í•˜ì§€ ì•Šìœ¼ë©´ ë‹¤ìš´ë°›ëŠ”ë‹¤.				
 				String address3 = url3 + apiKey +"&Layer=" + layerName + "&Level=" + level 
 						+ "&IDX=" + idxIdyList[i][0] + "&IDY=" + idxIdyList[i][1];				
-				int size = sendQueryForBin(address3, "DEM bil\\"+fileNameBil);   //IDX¿Í IDY ¹× nodeLevelÀ» º¸³»¼­ bil¸ñ·ÏµéÀ» ¹Ş¾Æ bil¿¡ ÀúÀåÇÑ´Ù.
-				if (size < 16900) { //Á¦´ë·Î µÈ ÆÄÀÏÀÌ ¾Æ´Ï¸é.
-					System.out.println("file :"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+"¼¼¼Ç °Ç³Ê¶Ü(¿ë·®ºÎÁ·)....."+(i+1)+"/"+idxIdyList.length);
+				int size = sendQueryForBin(address3, "DEM bil\\"+fileNameBil);   //IDXì™€ IDY ë° nodeLevelì„ ë³´ë‚´ì„œ bilëª©ë¡ë“¤ì„ ë°›ì•„ bilì— ì €ì¥í•œë‹¤.
+				if (size < 16900) { //ì œëŒ€ë¡œ ëœ íŒŒì¼ì´ ì•„ë‹ˆë©´.
+					System.out.println("file :"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+"ì„¸ì…˜ ê±´ë„ˆëœ€(ìš©ëŸ‰ë¶€ì¡±)....."+(i+1)+"/"+idxIdyList.length);
 					continue L1;
 				}
 			} 
 				
 			String fileNameParsedTxt = "terrain file_"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+".txt";
 			if (!fileExistTxt.contains(fileNameParsedTxt)) {
-				bilParser(idxIdyList[i], fileNameBil, fileNameParsedTxt); //dat¸¦ ´Ù½Ã ÀĞ°í txt¿¡ ÆÄ½ÌÇÑ´Ù.
-				bilParserUTMK(idxIdyList[i], fileNameBil, fileNameParsedTxt); //dat¸¦ ´Ù½Ã ÀĞ°í txt¿¡ ÆÄ½ÌÇÑ´Ù.
+				bilParser(idxIdyList[i], fileNameBil, fileNameParsedTxt); //datë¥¼ ë‹¤ì‹œ ì½ê³  txtì— íŒŒì‹±í•œë‹¤.
+				bilParserUTMK(idxIdyList[i], fileNameBil, fileNameParsedTxt); //datë¥¼ ë‹¤ì‹œ ì½ê³  txtì— íŒŒì‹±í•œë‹¤.
 			}
 			
 			
@@ -140,7 +140,7 @@ public class DEMCrawler {
 				objWriterUTMK(idxIdyList[i], fileNameParsedTxt, fileNameObj); 
 			}
 			
-			System.out.println(fileNameParsedTxt+"ÀúÀå¿Ï·á....."+(i+1)+"/"+idxIdyList.length);
+			System.out.println(fileNameParsedTxt+"ì €ì¥ì™„ë£Œ....."+(i+1)+"/"+idxIdyList.length);
 			
 		} //for L1
 	}
@@ -168,7 +168,7 @@ public class DEMCrawler {
 		FileWriter fw = new FileWriter(targetDirectory+"DEM obj\\"+ fileNameObj);
 		BufferedWriter bw = new BufferedWriter(fw);	
 		
-		//obj ÆÄÀÏ Çü½Ä¿¡ ¸Â°Ô ÀúÀåÇÑ´Ù. »ï°¢Çü ¸éµéÀ» ¸¸µç´Ù.
+		//obj íŒŒì¼ í˜•ì‹ì— ë§ê²Œ ì €ì¥í•œë‹¤. ì‚¼ê°í˜• ë©´ë“¤ì„ ë§Œë“ ë‹¤.
 		bw.write("# Rhino");
 		bw.newLine();
 		bw.newLine();
@@ -221,7 +221,7 @@ public class DEMCrawler {
 		FileWriter fw = new FileWriter(targetDirectory+"DEM obj_UTMK\\"+ fileNameObj);
 		BufferedWriter bw = new BufferedWriter(fw);	
 		
-		//obj ÆÄÀÏ Çü½Ä¿¡ ¸Â°Ô ÀúÀåÇÑ´Ù. »ï°¢Çü ¸éµéÀ» ¸¸µç´Ù.
+		//obj íŒŒì¼ í˜•ì‹ì— ë§ê²Œ ì €ì¥í•œë‹¤. ì‚¼ê°í˜• ë©´ë“¤ì„ ë§Œë“ ë‹¤.
 		bw.write("# Rhino");
 		bw.newLine();
 		bw.newLine();
@@ -251,7 +251,7 @@ public class DEMCrawler {
 
 	
 	/**
-	 * httpRequest¸¦ º¸³»°í ¹ÙÀÌ³Ê¸® ÆÄÀÏÀ» ¹Ş¾Æ ÀúÀåÇÑ´Ù.
+	 * httpRequestë¥¼ ë³´ë‚´ê³  ë°”ì´ë„ˆë¦¬ íŒŒì¼ì„ ë°›ì•„ ì €ì¥í•œë‹¤.
 	 * @param address
 	 * @param xdofileName
 	 */
@@ -261,7 +261,7 @@ public class DEMCrawler {
 		
 		try {
 			
-			//ÀÌ ºÎºĞÀ» ¾²·Á¸é ¾ÆÆÄÄ¡¿¡¼­ httpClient¸¦ ´Ù¿î¹Ş¾Æ ¼³Ä¡ÇÏ¿©¾ß ÇÑ´Ù.
+			//ì´ ë¶€ë¶„ì„ ì“°ë ¤ë©´ ì•„íŒŒì¹˜ì—ì„œ httpClientë¥¼ ë‹¤ìš´ë°›ì•„ ì„¤ì¹˜í•˜ì—¬ì•¼ í•œë‹¤.
 			CloseableHttpClient httpClient = HttpClients.createDefault();
 			
 			HttpGet httpGet = new HttpGet(address);	
@@ -297,29 +297,29 @@ public class DEMCrawler {
 
 
 	/**
-	 * xdo ¸®½ºÆ®°¡ ÀÖ´Â dat¸¦ ÀĞ°í txt¿¡ ÆÄ½ÌÇÏ¿© ÀúÀåÇÑ´Ù.
+	 * xdo ë¦¬ìŠ¤íŠ¸ê°€ ìˆëŠ” datë¥¼ ì½ê³  txtì— íŒŒì‹±í•˜ì—¬ ì €ì¥í•œë‹¤.
 	 */
 	private static void bilParser(String[] idxIdy, String fileName, String fileNameW) throws IOException {
 		
 		double idx = Double.parseDouble(idxIdy[0]);
 		double idy = Double.parseDouble(idxIdy[1]);
 		
-		double x = unit * (idx - (Math.pow(2, level-1)*10)); //Å¸ÀÏÀÇ ÁÂÇÏ´Ü xÁÂÇ¥(°æµµ) unit= 0.0010986328125 (´ë·«°ª)
-		double y = unit * (idy - (Math.pow(2, level-2)*10));  //Å¸ÀÏÀÇ ÁÂÇÏ´Ü yÁÂÇ¥(À§µµ)
-		//idx idy¿¡¼­ ¸ÕÀú »© ÁÖ´Â ¼ö´Â ¼­°æ 180µµ, È¤Àº ³²À§ 90µµ¸¸Å­
+		double x = unit * (idx - (Math.pow(2, level-1)*10)); //íƒ€ì¼ì˜ ì¢Œí•˜ë‹¨ xì¢Œí‘œ(ê²½ë„) unit= 0.0010986328125 (ëŒ€ëµê°’)
+		double y = unit * (idy - (Math.pow(2, level-2)*10));  //íƒ€ì¼ì˜ ì¢Œí•˜ë‹¨ yì¢Œí‘œ(ìœ„ë„)
+		//idx idyì—ì„œ ë¨¼ì € ë¹¼ ì£¼ëŠ” ìˆ˜ëŠ” ì„œê²½ 180ë„, í˜¹ì€ ë‚¨ìœ„ 90ë„ë§Œí¼
 		
 		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(new File(storageDirectory+"DEM bil\\"+fileName)));
 		
-		//°æÀ§µµ¿Í ³ôÀÌ·Î ±â·ÏÇÑ´Ù.
+		//ê²½ìœ„ë„ì™€ ë†’ì´ë¡œ ê¸°ë¡í•œë‹¤.
 		FileWriter fw = new FileWriter(storageDirectory+"DEM txt_latlon\\"+ fileNameW);
 		BufferedWriter bw = new BufferedWriter(fw);		
 		
-		//µÕ±Ù Áö±¸ »óÀÇ 3Â÷¿ø ÁÂÇ¥·Î ±â·ÏÇÑ´Ù.
+		//ë‘¥ê·¼ ì§€êµ¬ ìƒì˜ 3ì°¨ì› ì¢Œí‘œë¡œ ê¸°ë¡í•œë‹¤.
 		FileWriter fwc = new FileWriter(storageDirectory+"DEM txt_Cartesian\\"+ fileNameW);
 		BufferedWriter bwc = new BufferedWriter(fwc);	
 		
 		//terrain height
-		//vworld¿¡¼­ Á¦°øÇÏ´Â DEMÀÌ 65x65°³ÀÇ Á¡À¸·Î µÇ¾î ÀÖ´Ù.
+		//vworldì—ì„œ ì œê³µí•˜ëŠ” DEMì´ 65x65ê°œì˜ ì ìœ¼ë¡œ ë˜ì–´ ìˆë‹¤.
 		for (int yy=64 ; yy>=0 ; yy--) {			
 			for (int xx=0 ; xx<65 ; xx++) {				
 				double xDegree = x+(unit/64)*xx;
@@ -327,10 +327,10 @@ public class DEMCrawler {
 				float height = pFloat(bis);
 				Vec4 coor = geodeticToCartesian(xDegree, yDegree, height);
 				
-				//65x65ÀÇ °İÀÚÀÌÁö¸¸ ÈÄ¼Ó ÀÛ¾÷À» °í·ÁÇÏ¿© ÀÏ·Ä·Î ±â·ÏÇÑ´Ù.
+				//65x65ì˜ ê²©ìì´ì§€ë§Œ í›„ì† ì‘ì—…ì„ ê³ ë ¤í•˜ì—¬ ì¼ë ¬ë¡œ ê¸°ë¡í•œë‹¤.
 				bwc.write(coor.x+","+coor.y+","+coor.height);
 				bwc.newLine();
-				bw.write(xDegree+","+(yDegree)+","+height); //ÀÌ°ÍÀ» ¾²¸é °æµµ,À§µµ,³ôÀÌ·Î ±â·Ï
+				bw.write(xDegree+","+(yDegree)+","+height); //ì´ê²ƒì„ ì“°ë©´ ê²½ë„,ìœ„ë„,ë†’ì´ë¡œ ê¸°ë¡
 				bw.newLine();	
 			}		
 		}		
@@ -344,9 +344,9 @@ public class DEMCrawler {
 		double idx = Double.parseDouble(idxIdy[0]);
 		double idy = Double.parseDouble(idxIdy[1]);
 		
-		double x = unit * (idx - (Math.pow(2, level-1)*10)); //Å¸ÀÏÀÇ ÁÂÇÏ´Ü xÁÂÇ¥(°æµµ) unit= 0.0010986328125 (´ë·«°ª)
-		double y = unit * (idy - (Math.pow(2, level-2)*10));  //Å¸ÀÏÀÇ ÁÂÇÏ´Ü yÁÂÇ¥(À§µµ)
-		//idx idy¿¡¼­ ¸ÕÀú »© ÁÖ´Â ¼ö´Â ¼­°æ 180µµ, È¤Àº ³²À§ 90µµ¸¸Å­
+		double x = unit * (idx - (Math.pow(2, level-1)*10)); //íƒ€ì¼ì˜ ì¢Œí•˜ë‹¨ xì¢Œí‘œ(ê²½ë„) unit= 0.0010986328125 (ëŒ€ëµê°’)
+		double y = unit * (idy - (Math.pow(2, level-2)*10));  //íƒ€ì¼ì˜ ì¢Œí•˜ë‹¨ yì¢Œí‘œ(ìœ„ë„)
+		//idx idyì—ì„œ ë¨¼ì € ë¹¼ ì£¼ëŠ” ìˆ˜ëŠ” ì„œê²½ 180ë„, í˜¹ì€ ë‚¨ìœ„ 90ë„ë§Œí¼
 		
 		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(new File(storageDirectory+"DEM bil\\"+fileName)));
 		
@@ -354,7 +354,7 @@ public class DEMCrawler {
 		BufferedWriter bwc = new BufferedWriter(fwc);	
 		
 		//terrain height
-		//vworld¿¡¼­ Á¦°øÇÏ´Â DEMÀÌ 65x65°³ÀÇ Á¡À¸·Î µÇ¾î ÀÖ´Ù.
+		//vworldì—ì„œ ì œê³µí•˜ëŠ” DEMì´ 65x65ê°œì˜ ì ìœ¼ë¡œ ë˜ì–´ ìˆë‹¤.
 		for (int yy=64 ; yy>=0 ; yy--) {
 			
 			for (int xx=0 ; xx<65 ; xx++) {
@@ -365,7 +365,7 @@ public class DEMCrawler {
 				GeoPoint xy_ = new GeoPoint(xDegree,yDegree);
 				GeoPoint xy = GeoTrans.convert(GeoTrans.GEO, GeoTrans.UTMK, xy_);
 				
-				//65x65ÀÇ °İÀÚÀÌÁö¸¸ ÈÄ¼Ó ÀÛ¾÷À» °í·ÁÇÏ¿© ÀÏ·Ä·Î ±â·ÏÇÑ´Ù.
+				//65x65ì˜ ê²©ìì´ì§€ë§Œ í›„ì† ì‘ì—…ì„ ê³ ë ¤í•˜ì—¬ ì¼ë ¬ë¡œ ê¸°ë¡í•œë‹¤.
 				bwc.write(xy.getX()+","+xy.getY()+","+height);
 				bwc.newLine();
 			}		
@@ -375,7 +375,7 @@ public class DEMCrawler {
 		bwc.close();		
 	}
 
-	//World Wind source¿¡¼­ Âü°íÇÏ°í vworld¿¡ ¸Â°Ô ¼öÁ¤
+	//World Wind sourceì—ì„œ ì°¸ê³ í•˜ê³  vworldì— ë§ê²Œ ìˆ˜ì •
 	//https://github.com/nasa/World-Wind-Java/blob/master/WorldWind/src/gov/nasa/worldwind/globes/EllipsoidalGlobe.java
 	private static Vec4 geodeticToCartesian(double longitude, double latitude, double metersElevation){
         
@@ -387,7 +387,7 @@ public class DEMCrawler {
         double rpm = // getRadius (in meters) of vertical in prime meridian
         		WGS84_EQUATORIAL_RADIUS / Math.sqrt(1.0 - WGS84_ES * sinLat * sinLat);
      
-        //vworldÀÇ ÁÂÇ¥°è»ê¹ıÀº world wind ¹æ½ÄÀÌ ¾Æ´Ï¶ó ±×³É ¸ğµÎ Àå¹İ°æÀ¸·Î °è»êÇÑ ¾à½ÄÀÓ
+        //vworldì˜ ì¢Œí‘œê³„ì‚°ë²•ì€ world wind ë°©ì‹ì´ ì•„ë‹ˆë¼ ê·¸ëƒ¥ ëª¨ë‘ ì¥ë°˜ê²½ìœ¼ë¡œ ê³„ì‚°í•œ ì•½ì‹ì„
         double x = (WGS84_EQUATORIAL_RADIUS + metersElevation) * cosLat * cosLon;
         double y = (WGS84_EQUATORIAL_RADIUS + metersElevation) * cosLat * sinLon;
         double z = (WGS84_EQUATORIAL_RADIUS + metersElevation) * sinLat;
@@ -401,7 +401,7 @@ public class DEMCrawler {
 		HashSet<String> fileNames = new HashSet<String>(); 		
 		File[] files = (new File(fileLocation)).listFiles(); 
 		
-		// µğ·ºÅä¸®°¡ ºñ¾î ÀÖÁö ¾Ê´Ù¸é 
+		// ë””ë ‰í† ë¦¬ê°€ ë¹„ì–´ ìˆì§€ ì•Šë‹¤ë©´ 
 		if(!(files.length <= 0)){ 			
 			for (int i = 0; i < files.length; i++) { 
 				if(files[i].isFile() && files[i].getName().endsWith(extension)){ 
@@ -412,7 +412,7 @@ public class DEMCrawler {
 		return fileNames;
 	}
 	
-	//4¹ÙÀÌÆ® ÀĞ¾î¼­ float·Î ÀúÀå 
+	//4ë°”ì´íŠ¸ ì½ì–´ì„œ floatë¡œ ì €ì¥ 
 	private static float pFloat(BufferedInputStream bis) throws IOException {		
 		byte[] b = new byte[4];
 		int readByteNo = bis.read(b);	
@@ -432,7 +432,7 @@ public class DEMCrawler {
 			if (files != null ) {
 				for (int j = 0; j < files.length; j++) { 
 					if(files[j].equals(subfolder)) {
-						isExist = true; //°°Àº ÀÌ¸§ÀÌ ÀÖÀ¸¸é ºüÁ®³ª¿À°í
+						isExist = true; //ê°™ì€ ì´ë¦„ì´ ìˆìœ¼ë©´ ë¹ ì ¸ë‚˜ì˜¤ê³ 
 						break;
 					}		
 	            } //for
