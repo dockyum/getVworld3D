@@ -249,7 +249,7 @@ public class DEMCrawler {
 		
 		bw.close();
 		
-		fileCopy(storageDirectory+"DEM dds\\"+"tile_"+idxidy[0]+"_"+idxidy[1]+".dds", targetDirectory+"DEM obj_UTMK\\"+"tile_"+idxidy[0]+"_"+idxidy[1]+".dds");
+		fileCopy(storageDirectory+"DEM dds\\"+"tile_"+idxidy[0]+"_"+idxidy[1]+".dds", targetDirectory+targetSubfolder+"tile_"+idxidy[0]+"_"+idxidy[1]+".dds");
 		
 	}
 	
