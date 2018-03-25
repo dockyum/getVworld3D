@@ -311,23 +311,7 @@ public class Building3dCrawler {
 		//material의 기본적 속성은 임의로 아래와 같이 쓴다.
 		//mtl 파일의 자세한 스펙은 아래를 참조
 		//http://paulbourke.net/dataformats/mtl/
-		bwm.write("newmtl "+key);			
-		bwm.newLine();
-		bwm.write("Ka 1.000000 1.000000 1.000000");	
-		bwm.newLine();
-		bwm.write("Kd 1.000000 1.000000 1.000000");	
-		bwm.newLine();
-		bwm.write("Ks 0.000000 0.000000 0.000000");	
-		bwm.newLine();
-		bwm.write("Tr 1.000000");	
-		bwm.newLine();
-		bwm.write("illum 1");
-		bwm.newLine();
-		bwm.write("Ns 0.000000");	
-		bwm.newLine();
-		bwm.write("map_Kd "+imageName);
-		bwm.newLine();
-		bwm.newLine();		
+		mtlSubWriter(bwm, key,imageName);	
 
 		for (int i=0 ; i<vertexCount ; i++) {				
 			bw.write("v "+vertex[i][0]+" "+vertex[i][1]+" "+vertex[i][2]);	
@@ -427,23 +411,7 @@ public class Building3dCrawler {
 		bw.write("g "+key);
 		bw.newLine();
 		
-		bwm.write("newmtl "+key);
-		bwm.newLine();
-		bwm.write("Ka 1.000000 1.000000 1.000000");	
-		bwm.newLine();
-		bwm.write("Kd 1.000000 1.000000 1.000000");	
-		bwm.newLine();
-		bwm.write("Ks 0.000000 0.000000 0.000000");	
-		bwm.newLine();
-		bwm.write("Tr 1.000000");	
-		bwm.newLine();
-		bwm.write("illum 1");
-		bwm.newLine();
-		bwm.write("Ns 0.000000");	
-		bwm.newLine();
-		bwm.write("map_Kd "+imageName);
-		bwm.newLine();
-		bwm.newLine();
+		mtlSubWriter(bwm, key,imageName);
 		
 		for (int i=0 ; i<vertexCount ; i++) {				
 			bw.write("v "+vertex[i][0]+" "+vertex[i][1]+" "+vertex[i][2]);	
@@ -549,23 +517,7 @@ public class Building3dCrawler {
 			//material의 기본적 속성은 임의로 아래와 같이 쓴다.
 			//mtl 파일의 자세한 스펙은 아래를 참조
 			//http://paulbourke.net/dataformats/mtl/
-			bwm.write("newmtl "+key);			
-			bwm.newLine();
-			bwm.write("Ka 1.000000 1.000000 1.000000");	
-			bwm.newLine();
-			bwm.write("Kd 1.000000 1.000000 1.000000");	
-			bwm.newLine();
-			bwm.write("Ks 0.000000 0.000000 0.000000");	
-			bwm.newLine();
-			bwm.write("Tr 1.000000");	
-			bwm.newLine();
-			bwm.write("illum 1");
-			bwm.newLine();
-			bwm.write("Ns 0.000000");	
-			bwm.newLine();
-			bwm.write("map_Kd "+imageName);
-			bwm.newLine();
-			bwm.newLine();
+			mtlSubWriter(bwm, key,imageName);
 			
 			for (int i=0 ; i<vertexCount ; i++) {				
 				bw.write("v "+vertex[i][0]+" "+vertex[i][1]+" "+vertex[i][2]);	
@@ -677,23 +629,7 @@ public class Building3dCrawler {
 			bw.write("g "+key);
 			bw.newLine();
 			
-			bwm.write("newmtl "+key);
-			bwm.newLine();
-			bwm.write("Ka 1.000000 1.000000 1.000000");	
-			bwm.newLine();
-			bwm.write("Kd 1.000000 1.000000 1.000000");	
-			bwm.newLine();
-			bwm.write("Ks 0.000000 0.000000 0.000000");	
-			bwm.newLine();
-			bwm.write("Tr 1.000000");	
-			bwm.newLine();
-			bwm.write("illum 1");
-			bwm.newLine();
-			bwm.write("Ns 0.000000");	
-			bwm.newLine();
-			bwm.write("map_Kd "+imageName);
-			bwm.newLine();
-			bwm.newLine();
+			mtlSubWriter(bwm, key,imageName);
 			
 			for (int i=0 ; i<vertexCount ; i++) {				
 				bw.write("v "+vertex[i][0]+" "+vertex[i][1]+" "+vertex[i][2]);	
@@ -724,6 +660,28 @@ public class Building3dCrawler {
 			
 		}
 		bis.close();	
+		
+	}
+	
+	private static void mtlSubWriter(BufferedWriter bw, String key, String imageName) throws IOException {
+		
+		bw.write("newmtl "+key);			
+		bw.newLine();
+		bw.write("Ka 0.000000 0.000000 0.000000");	
+		bw.newLine();
+		bw.write("Kd 1.000000 1.000000 1.000000");	
+		bw.newLine();
+		bw.write("Ks 1.000000 1.000000 1.000000");	
+		bw.newLine();
+		bw.write("Tf 0.0000 0.0000 0.0000");
+		bw.newLine();
+		bw.write("d 1.0000");
+		bw.newLine();
+		bw.write("Ns 0");
+		bw.newLine();
+		bw.write("map_Kd "+imageName);
+		bw.newLine();
+		bw.newLine();
 		
 	}
 
