@@ -75,12 +75,13 @@ public class DEMCrawler {
 	public static void main(String[] args) throws IOException {
 		
 		//필요한 subfolder를 만든다. 이미 있으면 건너뛴다.
-		String[] folders1 = {"DEM bil","DEM txt_Cartesian","DEM txt_latlon","DEM txt_UTMK"};
+		String[] folders1 = {"DEM bil","DEM txt_Cartesian","DEM txt_latlon","DEM txt_UTMK","DEM dds};
 		makeSubFolders(storageDirectory, folders1);
 		String[] folders2 = {"DEM obj","DEM obj_UTMK"};
 		makeSubFolders(targetDirectory,folders2);
 		
 		String layerName = "dem";
+		String layerName2 = "tile";
 		
 		String[] latlon = getCoordination(); //어떤 영역을 가져올지 정한다.
 		String minLon = latlon[0]; //경도
@@ -108,12 +109,24 @@ public class DEMCrawler {
 		//중복 다운로드를 피하기 위해 현재 있는 파일들 목록을 구한다.
 		HashSet<String> fileExistBil = getFileNames(storageDirectory+"DEM bil\\", ".bil");
 		HashSet<String> fileExistTxt = getFileNames(storageDirectory+"DEM txt_latlon\\", ".txt");	
-		HashSet<String> fileExistObj = getFileNames(targetDirectory+"DEM obj\\", ".obj");		
+		HashSet<String> fileExistObj = getFileNames(targetDirectory+"DEM obj\\", ".obj");	
+		HashSet<String> fileNamesDds = getFileNames(storageDirectory+"DEM dds\\", ".dds");
 		
 		//단위 구역들을 차례차례 처리한다.
 		L1 : for (int i=0 ; i<idxIdyList.length ; i++) {
 			
 			System.out.println("file :"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+"세션 시작....."+(i+1)+"/"+idxIdyList.length);			
+			
+			//tile 이미지를 받아온다.
+			String fileNameDds = "tile_"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+".dds";			
+			
+			if (!fileNamesDds.contains(fileNameDds)) {
+				
+				String address3_1= url3 + apiKey +"&Layer=" + layerName2 + "&Level=" + level 
+						+ "&IDX=" + idxIdyList[i][0] + "&IDY=" + idxIdyList[i][1];
+				sendQueryForBin(address3_1,"DEM dds\\"+fileNameDds);
+			} 
+			System.out.println("tile ok");
 			
 			//만약 이미 bil 파일이 존재하면 건너뛴다.
 			String fileNameBil = "terrain file_"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+".bil";			
@@ -136,8 +149,10 @@ public class DEMCrawler {
 			
 			String fileNameObj = "obj file_"+idxIdyList[i][0]+"_"+idxIdyList[i][1]+".obj";	
 			if (!fileExistObj.contains(fileNameObj)) {
-				objWriter(idxIdyList[i], fileNameParsedTxt, fileNameObj); 
-				objWriterUTMK(idxIdyList[i], fileNameParsedTxt, fileNameObj); 
+				mtlWriter(idxIdyList[i], "DEM obj\\");
+				objWriter(idxIdyList[i], fileNameParsedTxt, fileNameObj, "DEM txt_Cartesian\\", "DEM obj\\");
+				mtlWriter(idxIdyList[i], "DEM obj_UTMK\\");
+				objWriter(idxIdyList[i], fileNameParsedTxt, fileNameObj, "DEM txt_UTMK\\", "DEM obj_UTMK\\"); //dat를 다시 읽고 txt에 파싱한다.
 			}
 			
 			System.out.println(fileNameParsedTxt+"저장완료....."+(i+1)+"/"+idxIdyList.length);
@@ -146,9 +161,37 @@ public class DEMCrawler {
 	}
 	
 
-	private static void objWriter(String[] idxidy, String fileNameParsedTxt, String fileNameObj) throws IOException {
+	private static void mtlWriter(String[] idxidy, String subFolder) throws IOException {
 		
-		FileReader fr = new FileReader(storageDirectory+"DEM txt_Cartesian\\"+fileNameParsedTxt);
+		FileWriter fw = new FileWriter(targetDirectory+subFolder+"mtl_"+idxidy[0]+"_"+idxidy[1]+".mtl");
+		BufferedWriter bw = new BufferedWriter(fw);	
+		
+		bw.write("# Rhino");
+		bw.newLine();
+		bw.write("newmtl "+idxidy[0]+"_"+idxidy[1]);
+		bw.newLine();
+		bw.write("Ka 0.0000 0.0000 0.0000");
+		bw.newLine();
+		bw.write("Kd 1.0000 1.0000 1.0000");
+		bw.newLine();
+		bw.write("Ks 1.0000 1.0000 1.0000");
+		bw.newLine();
+		bw.write("Tf 0.0000 0.0000 0.0000");
+		bw.newLine();
+		bw.write("d 1.0000");
+		bw.newLine();
+		bw.write("Ns 0");
+		bw.newLine();
+		bw.write("map_Kd tile_"+idxidy[0]+"_"+idxidy[1]+".dds");
+		bw.newLine();
+		bw.close();	
+		
+	}
+		
+	private static void objWriter(String[] idxidy, String fileNameParsedTxt, String fileNameObj
+			, String sourceSubfolder, String targetSubfolder) throws IOException {
+		
+		FileReader fr = new FileReader(storageDirectory+sourceSubfolder+fileNameParsedTxt);
 		BufferedReader br = new BufferedReader(fr);
 		
 		ArrayList<Double[]> coordinates = new ArrayList<Double[]>();
@@ -165,14 +208,17 @@ public class DEMCrawler {
 		
 		br.close();
 		
-		FileWriter fw = new FileWriter(targetDirectory+"DEM obj\\"+ fileNameObj);
+		FileWriter fw = new FileWriter(targetDirectory+targetSubfolder+ fileNameObj);
 		BufferedWriter bw = new BufferedWriter(fw);	
 		
-		//obj 파일 형식에 맞게 저장한다. 삼각형 면들을 만든다.
 		bw.write("# Rhino");
 		bw.newLine();
 		bw.newLine();
+		bw.write("mtllib mtl_"+idxidy[0]+"_"+idxidy[1]+".mtl");
+		bw.newLine();
 		bw.write("g "+idxidy[0]+"_"+idxidy[1]);
+		bw.newLine();
+		bw.write("usemtl "+idxidy[0]+"_"+idxidy[1]);
 		bw.newLine();
 		
 		for (int i = 0 ; i<coordinates.size() ; i++) {
@@ -180,74 +226,34 @@ public class DEMCrawler {
 			bw.newLine();
 		}
 		
+		for (int i = 0 ; i< 65 ; i++) {
+			float v = 1.0f-(i*1.0f/64.0f);
+			for (int j=0 ; j<65 ; j++) {
+				float u = j*(1.0f/64.0f);
+				bw.write("vt "+u+" "+v);
+				bw.newLine();				
+			}
+		}
+		
 		for (int i = 0 ; i< 64 ; i++) {
 			for (int j=1 ; j<65 ; j++) {
-				
 				int v = j+(i*65);
-			
 				bw.write("f ");
-				bw.write(v+" "+(v+65)+" "+(v+66));
+				bw.write(v+"/"+v+" "+(v+65)+"/"+(v+65)+" "+(v+66)+"/"+(v+66));
 				bw.newLine();
 				bw.write("f ");
-				bw.write(v+" "+(v+66)+" "+(v+1));
-				bw.newLine();				
-				
+				bw.write(v+"/"+v+" "+(v+66)+"/"+(v+66)+" "+(v+1)+"/"+(v+1));
+				bw.newLine();
 			}			
 		}
 		
 		bw.close();
+		
+		fileCopy(storageDirectory+"DEM dds\\"+"tile_"+idxidy[0]+"_"+idxidy[1]+".dds", targetDirectory+"DEM obj_UTMK\\"+"tile_"+idxidy[0]+"_"+idxidy[1]+".dds");
 		
 	}
 	
-	private static void objWriterUTMK(String[] idxidy, String fileNameParsedTxt, String fileNameObj) throws IOException {
-		
-		FileReader fr = new FileReader(storageDirectory+"DEM txt_UTMK\\"+fileNameParsedTxt);
-		BufferedReader br = new BufferedReader(fr);
-		
-		ArrayList<Double[]> coordinates = new ArrayList<Double[]>();
-		String line;
-		
-		while ((line=br.readLine())!=null) {
-			String[] coorStr = line.split(",");
-			Double[] coorDb = new Double[3];
-			coorDb[0] = Double.parseDouble(coorStr[0]);
-			coorDb[1] = Double.parseDouble(coorStr[1]);
-			coorDb[2] = Double.parseDouble(coorStr[2]);			
-			coordinates.add(coorDb);
-		}
-		
-		br.close();
-		
-		FileWriter fw = new FileWriter(targetDirectory+"DEM obj_UTMK\\"+ fileNameObj);
-		BufferedWriter bw = new BufferedWriter(fw);	
-		
-		//obj 파일 형식에 맞게 저장한다. 삼각형 면들을 만든다.
-		bw.write("# Rhino");
-		bw.newLine();
-		bw.newLine();
-		bw.write("g "+idxidy[0]+"_"+idxidy[1]);
-		bw.newLine();
-		
-		for (int i = 0 ; i<coordinates.size() ; i++) {
-			bw.write("v "+coordinates.get(i)[0]+" "+coordinates.get(i)[1]+" "+coordinates.get(i)[2]);
-			bw.newLine();
-		}
-		
-		for (int i = 0 ; i< 64 ; i++) {
-			for (int j=1 ; j<65 ; j++) {
-				
-				int v = j+(i*65);
-			
-				bw.write("f ");
-				bw.write(v+" "+(v+65)+" "+(v+66));
-				bw.newLine();
-				bw.write("f ");
-				bw.write(v+" "+(v+66)+" "+(v+1));
-				bw.newLine();	
-			}			
-		}
-		bw.close();
-	}
+	
 
 	
 	/**
@@ -442,6 +448,24 @@ public class DEMCrawler {
 				newDir.mkdirs();		
 			}
 		}
+	}
+		
+	private static void fileCopy(String inFileName, String outFileName) throws IOException {
+		
+		//http://fruitdev.tistory.com/87 	
+		FileInputStream inputStream = new FileInputStream(inFileName);        
+		FileOutputStream outputStream = new FileOutputStream(outFileName);
+		  
+		FileChannel fcin =  inputStream.getChannel();
+		FileChannel fcout = outputStream.getChannel();
+		  
+		long size = fcin.size();
+		fcin.transferTo(0, size, fcout);
+		  
+		fcout.close();
+		fcin.close();		  
+		outputStream.close();
+		inputStream.close();
 	}
 	
 	
