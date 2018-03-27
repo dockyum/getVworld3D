@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -75,7 +76,7 @@ public class DEMCrawler {
 	public static void main(String[] args) throws IOException {
 		
 		//필요한 subfolder를 만든다. 이미 있으면 건너뛴다.
-		String[] folders1 = {"DEM bil","DEM txt_Cartesian","DEM txt_latlon","DEM txt_UTMK","DEM dds};
+		String[] folders1 = {"DEM bil","DEM txt_Cartesian","DEM txt_latlon","DEM txt_UTMK","DEM dds"};
 		makeSubFolders(storageDirectory, folders1);
 		String[] folders2 = {"DEM obj","DEM obj_UTMK"};
 		makeSubFolders(targetDirectory,folders2);
