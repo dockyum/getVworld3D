@@ -1,4 +1,4 @@
-pakage vworld;
+package vworld;
 
 class Vec4 {
 	
